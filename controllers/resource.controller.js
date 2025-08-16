@@ -3,10 +3,38 @@ import Class from "../models/class.model.js";
 import mongoose from "mongoose";
 import { createResourceSchema } from "../types/resource.validatior.js";
 import User from "../models/user.model.js";
-// import { uploadFromBuffer } from '../utils/cloudinary.js';
-// pdf-parse will be imported dynamically to avoid test file access issues
 import Resource from '../models/resource.model.js';
 
+
+export const getAllClassResources = async (req, res) => {
+    try {
+      // We fetch all classes and use nested populate to get subjects and their resources
+      const allClassData = await Class.find({})
+        .select('courseName section semester subject') // Select only the fields we need from the Class
+        .populate({
+          path: 'subject', // Populate the 'subject' array within each Class
+          select: 'title subjectTeacher resources', // Select needed fields from the Subject
+          populate: {
+            path: 'resources', // THEN, populate the 'resources' array within each Subject
+            select: 'title link type createdAt', // Select needed fields from the Resource
+          },
+        })
+        .lean(); // Use .lean() for faster, plain JavaScript objects
+  
+      // Filter out classes that have no subjects or whose subjects have no resources
+      const filteredData = allClassData.filter(cls => 
+        cls.subject.length > 0 && cls.subject.some(sub => sub.resources.length > 0)
+      );
+  
+      res.status(200).json({
+        message: 'Successfully fetched all class resources.',
+        data: filteredData,
+      });
+    } catch (error) {
+      console.error('Error fetching all class resources:', error);
+      res.status(500).json({ message: 'Server error while fetching all resources.' });
+    }
+  };
 
 export const createYtresource = async (req, res) => {
     try {
