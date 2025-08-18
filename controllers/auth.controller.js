@@ -4,7 +4,7 @@ import { userLoginValidator, userRegisterValidator, userUpdateValidator } from "
 import bcrypt from "bcryptjs";
 import Class from "../models/class.model.js";
 
-const adminEmails = ["gangasingh1734@gmail.com", "aayush123@gmail.com",]
+const adminEmails = ["gangasingh1734@gmail.com", "aayush123@gmail.com","vipulsinghrana77@gmail.com","sujalmahajan712@gmail.com"]
 
 // Helper to find or create class and return its _id
 async function getOrCreateClassId(courseName, section, semester, userId) {
